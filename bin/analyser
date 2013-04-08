@@ -3,19 +3,20 @@
 def count_good_googlers(line, cached_triplets)
   numbers = line.split(" ")
   suprises = numbers[1].to_i
-  good_min = line[2].to_i
+  good_min = numbers[2].to_i
   
   googlers = numbers.slice(3, numbers.length).inject([]) { | googlers, score | googlers << score.to_i }
 
   good_googlers = googlers.inject(0) do | good_googlers, googler | 
-    puts(line)
-    puts(googler)
+
     possible_triplets = cached_triplets[googler]
-    puts(possible_triplets)
-    puts(good_min)
+
     if possible_triplets[:unsuprised][0][2] >= good_min
       good_googlers = good_googlers + 1
+    else
+      good_googlers = good_googlers
     end
+
   end
   good_googlers
 end
