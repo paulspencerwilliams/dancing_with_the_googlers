@@ -1,0 +1,42 @@
+#!/usr/bin/env ruby
+
+class Googler
+
+  def initialize(score) 
+    @score = score
+  end 
+
+end
+
+class Round
+  attr_accessor :googlers
+
+  def initialize(surprises, to_beat)
+    @suprises = surprises
+    @to_beat = to_beat
+    @googlers = []
+  end
+
+end
+ 
+class RoundFactory 
+  def self.build(argument_string)
+    arguments = argument_string.split(' ')
+    scores_array = arguments.slice(3, 10)
+    round = Round.new(arguments[1], arguments[2])
+    scores_array.each do | score |
+      round.googlers << Googler.new(score)
+    end
+  end
+end
+
+File.open(ARGV[0]) do |f|
+  f.each_line.with_index do |line, index|
+    if index > 0 
+      round = RoundFactory.build(line)
+      STDOUT << "Case ##{index}: #{round.googlers_beating_to_beat}   \n"
+    end
+  end
+end
+
+
