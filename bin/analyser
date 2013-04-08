@@ -1,40 +1,53 @@
 #!/usr/bin/env ruby
+  
+def count_good_googlers(line, cached_triplets)
+  numbers = line.split(" ")
+  suprises = numbers[1].to_i
+  good_min = line[2].to_i
+  
+  googlers = numbers.slice(3, numbers.length).inject([]) { | googlers, score | googlers << score.to_i }
 
-class Googler
-
-  def initialize(score) 
-    @score = score
-  end 
-
-end
-
-class Round
-  attr_accessor :googlers
-
-  def initialize(surprises, to_beat)
-    @suprises = surprises
-    @to_beat = to_beat
-    @googlers = []
-  end
-
-end
- 
-class RoundFactory 
-  def self.build(argument_string)
-    arguments = argument_string.split(' ')
-    scores_array = arguments.slice(3, 10)
-    round = Round.new(arguments[1], arguments[2])
-    scores_array.each do | score |
-      round.googlers << Googler.new(score)
+  good_googlers = googlers.inject(0) do | good_googlers, googler | 
+    puts(line)
+    puts(googler)
+    possible_triplets = cached_triplets[googler]
+    puts(possible_triplets)
+    puts(good_min)
+    if possible_triplets[:unsuprised][0][2] >= good_min
+      good_googlers = good_googlers + 1
     end
   end
+  good_googlers
+end
+
+def generate_triplets
+  triplets = {} 
+  (0..10).each do | lowest |
+    (lowest..10).each do | middle |
+      (middle..10).each do | highest |
+        if highest - lowest <= 2
+          total = lowest + middle + highest
+          unless triplets.has_key?(total)
+            triplets[total] = { :unsuprised => [], :suprised => []}
+          end
+          triplet = triplets[total]
+          if highest - lowest == 2
+            triplet[:suprised] << [lowest, middle, highest]
+          else
+            triplet[:unsuprised] << [lowest, middle, highest]
+          end 
+        end
+      end
+    end
+  end
+  triplets
 end
 
 File.open(ARGV[0]) do |f|
+  cached_triplets = generate_triplets
   f.each_line.with_index do |line, index|
     if index > 0 
-      round = RoundFactory.build(line)
-      STDOUT << "Case ##{index}: #{round.googlers_beating_to_beat}   \n"
+      STDOUT << "Case ##{index}: #{count_good_googlers(line, cached_triplets)}   \n"
     end
   end
 end
