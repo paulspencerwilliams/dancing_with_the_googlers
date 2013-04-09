@@ -11,11 +11,23 @@ def count_good_googlers(line, cached_triplets)
 
     possible_triplets = cached_triplets[googler]
 
-    if possible_triplets[:unsuprised][0][2] >= good_min
-      good_googlers = good_googlers + 1
+    if suprises > 0 && possible_triplets[:suprised].length > 0
+
+      suprises = suprises - 1
+
+      if possible_triplets[:suprised][0][2] >= good_min
+        good_googlers = good_googlers + 1
+      else
+        good_googlers = good_googlers
+      end
     else
-      good_googlers = good_googlers
+      if possible_triplets[:unsuprised][0][2] >= good_min
+        good_googlers = good_googlers + 1
+      else
+        good_googlers = good_googlers
+      end
     end
+    
 
   end
   good_googlers
